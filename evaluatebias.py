@@ -2,16 +2,17 @@ import sys
 sys.path.insert(1, "../") 
 import numpy as np
 import pandas as pd
-import airlinedataset as aire
+from scipy.stats import zscore
+#import airlinedataset as aire
 #from aif360.datasets import AdultDataset
+import gliomadataset as Glioma
 
 
 np.random.seed(0)
 
-dataset_orig=aire.AirlineDataset()
+dataset_orig=Glioma.GliomaDataset()
 
-#print(dataset_orig)
-
+print(dataset_orig)
 
 print("#### Training Dataset shape")
 print(dataset_orig.features.shape,type(dataset_orig.features))
@@ -26,8 +27,12 @@ print("#### Privileged and unprivileged protected attribute values")
 print(dataset_orig.privileged_protected_attributes, 
       dataset_orig.unprivileged_protected_attributes)
 
-
-
 print("#### Dataset feature names")
 print(dataset_orig.feature_names)
 print()
+
+#df = pd.read_csv('data/glioma/TCGA_InfoWithGrade.csv', header=0)
+#print (df.shape)
+#print(df.head)
+#df['Normalizado']=df.filter(like="Age_at_diagnosis").apply(zscore)
+#print(df.head)

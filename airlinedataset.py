@@ -5,12 +5,32 @@ import pandas as pd
 from aif360.datasets import StandardDataset
 
 default_mappings = {
-    'label_maps': [{1.0: 'neutral or dissatisfied', 2.0: 'satisfied'}],
-    'protected_attribute_maps': [{1.0: 'Male', 0.0: 'Female'}],
+    'label_maps': [{1.0: 'neutral or dissatisfied', 0.0: 'satisfied'}],
+    'protected_attribute_maps': [{0.0: 'Male', 1.0: 'Female'}],
 }
 
 class AirlineDataset(StandardDataset):
-    """Airline Train Dataset.
+    """Airline Dataset.
+    Datasets taken from https://www.kaggle.com/datasets/teejmahal20/airline-passenger-satisfaction
+    --------
+    train dataset: 24 attributes + 1 label Class
+    Attributes to be removed Number, Id
+    Gender attribute mapped 1.0 = Male, 0.0 Female
+    Female = 52,727 (priviliged)
+    Male   = 51,177
+    satisfied = Label Class
+    Mapped: 1.0: 'neutral or dissatisfied', 0.0: 'satisfied'
+    'neutral or dissatisfied' = 58,879 (Favorable Class) = 1
+    satisfied = 45,025 = 0
+    -------------
+    Test Dataset
+    Gender
+    Female = 13,172 (privileged) = 1
+    Male = 12,804 (unprivileged) = 0
+
+    'neutral or dissatisfied' = 14,573 (Favorable Class)
+    'satisfied' = 11, 403
+
     """
 
     def __init__(self, label_name='satisfaction',
@@ -23,54 +43,7 @@ class AirlineDataset(StandardDataset):
                  features_to_keep=[], features_to_drop=['Number', 'id'],
                  na_values=[], custom_preprocessing=None,
                  metadata=default_mappings):
-        """See :obj:`StandardDataset` for a description of the arguments.
-
-        Examples:
-            The following will instantiate a dataset which uses the `fnlwgt`
-            feature:
-
-            >>> from aif360.datasets import AdultDataset
-            >>> ad = AdultDataset(instance_weights_name='fnlwgt',
-            ... features_to_drop=[])
-            WARNING:root:Missing Data: 3620 rows removed from dataset.
-            >>> not np.all(ad.instance_weights == 1.)
-            True
-
-            To instantiate a dataset which utilizes only numerical features and
-            a single protected attribute, run:
-
-            >>> single_protected = ['sex']
-            >>> single_privileged = [['Male']]
-            >>> ad = AdultDataset(protected_attribute_names=single_protected,
-            ... privileged_classes=single_privileged,
-            ... categorical_features=[],
-            ... features_to_keep=['age', 'education-num'])
-            >>> print(ad.feature_names)
-            ['education-num', 'age', 'sex']
-            >>> print(ad.label_names)
-            ['income-per-year']
-
-            Note: the `protected_attribute_names` and `label_name` are kept even
-            if they are not explicitly given in `features_to_keep`.
-
-            In some cases, it may be useful to keep track of a mapping from
-            `float -> str` for protected attributes and/or labels. If our use
-            case differs from the default, we can modify the mapping stored in
-            `metadata`:
-
-            >>> label_map = {1.0: '>50K', 0.0: '<=50K'}
-            >>> protected_attribute_maps = [{1.0: 'Male', 0.0: 'Female'}]
-            >>> ad = AdultDataset(protected_attribute_names=['sex'],
-            ... categorical_features=['workclass', 'education', 'marital-status',
-            ... 'occupation', 'relationship', 'native-country', 'race'],
-            ... privileged_classes=[['Male']], metadata={'label_map': label_map,
-            ... 'protected_attribute_maps': protected_attribute_maps})
-
-            Note that we are now adding `race` as a `categorical_features`.
-            Now this information will stay attached to the dataset and can be
-            used for more descriptive visualizations.
-        """
-
+   
         train_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                   'data', 'airline', 'train.csv')
         test_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),

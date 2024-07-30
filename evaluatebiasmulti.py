@@ -28,7 +28,8 @@ print(df_orig.protected_attribute_names)
 #print(sens_attr)
 
 
-unprivileged_groups = [{'Race': 1},{'Race': 2},{'Race': 3}]
+#unprivileged_groups = [{'Race': 1},{'Race': 2},{'Race': 3}]
+unprivileged_groups = [{'Race': 2}]
 
 privileged_groups = [{'Race': 0}]
 
@@ -67,6 +68,9 @@ classified_metric_pred = ClassificationMetric(df_test,
                             dpred, 
                             unprivileged_groups=unprivileged_groups,
                             privileged_groups=privileged_groups)
+
+
+print('Confusion matrix ',classified_metric_pred.binary_confusion_matrix(privileged=False))
 
 print('Num positives', classified_metric_pred.num_positives(privileged=False))
 print('Num negatives', classified_metric_pred.num_negatives(privileged=False))

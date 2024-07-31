@@ -19,21 +19,51 @@ sens_ind = 0
 df = pd.DataFrame(dataset_m.features,columns=dataset_m.feature_names)
 #print(df.head())
 
+#Nombre de la columna/atributo protegido
 sens_attr = dataset_m.protected_attribute_names[sens_ind]
+
+#NOmbre de la columna/atributo de clase
 label_attr =dataset_m.label_names[0]
+
 print(sens_attr)
+print(label_attr)
+#print(dataset_m.labels)
 
 
+#Etiquetas de Clase
+print(dataset_m.favorable_label)
+print(dataset_m.unfavorable_label)
 
+print(dataset_m.privileged_protected_attributes[sens_ind])
+print(dataset_m.unprivileged_protected_attributes[sens_ind])
 
 x=df[sens_attr].values.tolist()
 y=dataset_m.labels
+y=np.squeeze(y)
+y=list(y)
+#print(y)
+#print(x)
+
+#print(df_two)
 
 print(type(x))
 print(type(y))
 
-#print(x.count(0))
-#print(x.count(1))
+print(x.count(0))
+print(x.count(1))
+
+#print(y[0])
+
+print(y.count(dataset_m.favorable_label))
+print(y.count(dataset_m.unfavorable_label))
+
+print(y[1])
+ 
+lista = pd.DataFrame({'Protected':x, 'Etiqueta':y})
+
+print(lista)
+# display result  
+#print(y)
 
 #su.compute_feature_class(data_full,unprivileged_groups=unprivileged_groups,privileged_groups=privileged_groups)
 

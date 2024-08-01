@@ -3,7 +3,7 @@ import pandas as pd
 
 import splitting_utils as su
 
-#from aif360.datasets import GermanDataset
+from aif360.datasets import GermanDataset
 
 #from aif360.datasets import AdultDataset
 

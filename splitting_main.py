@@ -5,33 +5,33 @@ import splitting_utils as su
 
 from aif360.datasets import GermanDataset
 
-#from aif360.datasets import AdultDataset
+from aif360.datasets import AdultDataset
 
-#from aif360.datasets import CompasDataset
+from aif360.datasets import CompasDataset
 
-#from aif360.datasets import BankDataset
-#from aif360.datasets import MEPSDataset19
-#from aif360.datasets import MEPSDataset20
+from aif360.datasets import BankDataset
+from aif360.datasets import MEPSDataset19
+from aif360.datasets import MEPSDataset20
 from aif360.datasets import MEPSDataset21
 
 
 
 np.random.seed(1)
 
-dataset_m = GermanDataset()
+#dataset_m = GermanDataset()
 #dataset_m = AdultDataset()
 #dataset_m = CompasDataset()
 #dataset_m = BankDataset()
 #dataset_m = MEPSDataset19()
 #dataset_m = MEPSDataset20()
-#dataset_m = MEPSDataset21()
-privileged_groups = [{'sex': 1}]
-unprivileged_groups = [{'sex': 0}]
+dataset_m = MEPSDataset21()
+#privileged_groups = [{'sex': 1}]
+#unprivileged_groups = [{'sex': 0}]
 
 #privileged_groups = [{'race': 1}]
 #unprivileged_groups = [{'race': 0}]
-#privileged_groups = [{'RACE': 1}]
-#unprivileged_groups = [{'RACE': 0}]
+privileged_groups = [{'RACE': 1}]
+unprivileged_groups = [{'RACE': 0}]
 #privileged_groups = [{'age': 1}]
 #unprivileged_groups = [{'age': 0}]
 

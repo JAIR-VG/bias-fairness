@@ -53,4 +53,6 @@ print(df)
 
 lista=df.sort_values(['Protected','Etiqueta'])
 
-print(lista)
+reducedlista = lista.loc[(lista["Protected"] == 0) & (lista["Etiqueta"] ==1)]
+
+print(reducedlista)

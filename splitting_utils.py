@@ -3,22 +3,22 @@ from collections import OrderedDict
 import numpy as np
 import pandas as pd
 
-
+# Este metodo calcula para un atributo, para cada valor, cuantas muestras hay por clase.
 def compute_feature_class(dataset_m, unprivileged_groups, privileged_groups,sens_ind):
     
     
-    keyp=list((privileged_groups[0]).keys())
+    keyp=list((privileged_groups[sens_ind]).keys())
 
-    valuep = list((privileged_groups[0]).values())
+    valuep = list((privileged_groups[sens_ind]).values())
     
-    valueunp = list((unprivileged_groups[0]).values())
+    valueunp = list((unprivileged_groups[sens_ind]).values())
     
-    sens_attr =keyp[0]
+    sens_attr =keyp[sens_ind]
     #print(valuep[0])
     #print(sens_attr)
 
-    valuep = valuep[0]
-    valueunp = valueunp[0]
+    valuep = valuep[sens_ind]
+    valueunp = valueunp[sens_ind]
     
 
     #Nombre de la columna/atributo protegido

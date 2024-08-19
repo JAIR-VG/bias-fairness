@@ -3,6 +3,7 @@ from collections import OrderedDict
 import numpy as np
 import pandas as pd
 
+
 # Este metodo calcula para un atributo, para cada valor, cuantas muestras hay por clase.
 def compute_feature_class(dataset_m, unprivileged_groups, privileged_groups,sens_ind):
     
@@ -53,8 +54,27 @@ def compute_feature_class(dataset_m, unprivileged_groups, privileged_groups,sens
     #print(y.shape)
     #print(y.ndim)
 
-def double_splitting(dataset_m, unprivileged_groups, privileged_groups,sens_ind):
+def double_splitting(dataset_m, num_or_size_splits, unprivileged_groups, privileged_groups,sens_ind, shuffle=False,seed =None):
 
+    if seed is not None:
+        np.random.seed(seed)
+    
+    n = dataset_m.features.shape[0]
+    print(n)
+    if isinstance(num_or_size_splits, list):
+        num_folds = len(num_or_size_splits) + 1
+        if num_folds > 1 and all(x <= 1. for x in num_or_size_splits):
+            num_or_size_splits = [int(x * n) for x in num_or_size_splits]
+    else:
+        num_folds = num_or_size_splits
+
+    print(num_folds)
+    order = list(np.random.permutation(n) if shuffle else range(n))
+    print(order)
+    folds = [dataset_m.copy() for _ in range(num_folds)]
+    print(folds)
+
+    print(dataset_m.protected_attributes)
     keyp=list((privileged_groups[0]).keys())
 
     valuep = list((privileged_groups[0]).values())
@@ -74,5 +94,5 @@ def double_splitting(dataset_m, unprivileged_groups, privileged_groups,sens_ind)
     y=dataset_m.labels
     y=np.squeeze(y)
     y=list(y)
-    print(x)
-    print(y)
+#    print(x)
+ #   print(y)

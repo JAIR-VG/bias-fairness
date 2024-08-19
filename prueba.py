@@ -10,77 +10,70 @@ dataset_m = GermanDataset()
 privileged_groups = [{'sex': 1}]
 unprivileged_groups = [{'sex': 0}]
 
-n=dataset_m.features.shape[0]
+su.double_splitting(dataset_m=dataset_m,num_or_size_splits=[0.8],
+                    unprivileged_groups=unprivileged_groups,privileged_groups=privileged_groups,
+                    sens_ind=0,shuffle=True,seed=0)
 
-print(n)
+#n=dataset_m.features.shape[0]
 
-num_or_size_splits =[0.7]
+#print(n)
 
-shuffle = True
+#num_or_size_splits =[0.7]
 
-if isinstance(num_or_size_splits,list):
-    num_folds = len(num_or_size_splits)+1
-    if num_folds > 1 and all(x<=1. for x in num_or_size_splits):
-        num_or_size_splits=[int(x*n) for x in num_or_size_splits]
-else:
-    num_folds=num_or_size_splits
+#shuffle = True
 
-print(num_folds)
+#seed =0
 
-order = list(np.random.permutation(n) if shuffle else range(n))
-#print(order)
-folds = [dataset_m.copy() for _ in range(num_folds)]
 
-#print(folds)
-print(dataset_m.features)
-print(dataset_m.labels)
-features = np.array_split(dataset_m.features[order], num_or_size_splits)
-labels = np.array_split(dataset_m.labels[order], num_or_size_splits)
-print(labels)
-sens_ind = 0
+#print(dataset_m.features)
+#print(dataset_m.labels)
+#features = np.array_split(dataset_m.features[order], num_or_size_splits)
+#labels = np.array_split(dataset_m.labels[order], num_or_size_splits)
+#print(labels)
+#sens_ind = 0
 
-keyp=list((privileged_groups[sens_ind]).keys())
+#keyp=list((privileged_groups[sens_ind]).keys())
 
-print(keyp)
+#print(keyp)
 
-valuep = list((privileged_groups[sens_ind]).values())
+#valuep = list((privileged_groups[sens_ind]).values())
 
-print(valuep)
+#print(valuep)
 
-valueunp = list((unprivileged_groups[sens_ind]).values())
+#valueunp = list((unprivileged_groups[sens_ind]).values())
 
-print(valueunp)
+#print(valueunp)
 
 #Obtiene los valores simples y no como una lista
-sens_attr =keyp[sens_ind]
-valuep = valuep[sens_ind]
-valueunp = valueunp[sens_ind]
+#sens_attr =keyp[sens_ind]
+#valuep = valuep[sens_ind]
+#valueunp = valueunp[sens_ind]
 
-df = pd.DataFrame(dataset_m.features,columns=dataset_m.feature_names)
+#df = pd.DataFrame(dataset_m.features,columns=dataset_m.feature_names)
 
 #print(df)
 
-x=df[sens_attr].values.tolist()
+#x=df[sens_attr].values.tolist()
 
 #print(x)
-y=dataset_m.labels
-y=np.squeeze(y)
-y=list(y)
+#y=dataset_m.labels
+#y=np.squeeze(y)
+#y=list(y)
 #print(y)
 
-ncountp=x.count(valuep)
-ncountunp =x.count(valueunp)
+#ncountp=x.count(valuep)
+#ncountunp =x.count(valueunp)
 
-print('Number of Unprivileged Values =', ncountunp)
-print('Number of Privileged =',ncountp)
+#print('Number of Unprivileged Values =', ncountunp)
+#print('Number of Privileged =',ncountp)
 
-df = pd.DataFrame({'Protected':x, 'Etiqueta':y})
+#df = pd.DataFrame({'Protected':x, 'Etiqueta':y})
 #print(df.index)
-df['index'] = df.index
+#df['index'] = df.index
 #print(df)
 
-lista=df.sort_values(['Protected','Etiqueta'])
+#lista=df.sort_values(['Protected','Etiqueta'])
 
-reducedlista = lista.loc[(lista["Protected"] == 0) & (lista["Etiqueta"] ==1)]
+#reducedlista = lista.loc[(lista["Protected"] == 0) & (lista["Etiqueta"] ==1)]
 
-print(reducedlista)
+#print(reducedlista)

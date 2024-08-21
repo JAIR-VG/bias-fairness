@@ -54,7 +54,7 @@ def compute_feature_class(dataset_m, unprivileged_groups, privileged_groups,sens
     #print(y.shape)
     #print(y.ndim)
 
-def double_splitting(dataset_m, num_or_size_splits, unprivileged_groups, privileged_groups,sens_ind, shuffle=False,seed =None):
+def double_split(dataset_m, num_or_size_splits, unprivileged_groups, privileged_groups,sens_ind, shuffle=False,seed =None):
 
     if seed is not None:
         np.random.seed(seed)

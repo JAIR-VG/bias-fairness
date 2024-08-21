@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-import splitting_utils as su
+import splitt_utils as su
 
 from aif360.datasets import GermanDataset
 

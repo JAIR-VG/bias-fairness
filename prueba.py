@@ -10,9 +10,12 @@ dataset_m = GermanDataset()
 privileged_groups = [{'sex': 1}]
 unprivileged_groups = [{'sex': 0}]
 
-su.double_splitting(dataset_m=dataset_m,num_or_size_splits=[0.8],
-                    unprivileged_groups=unprivileged_groups,privileged_groups=privileged_groups,
-                    sens_ind=0,shuffle=True,seed=0)
+su.double_split(dm=dataset_m,unprivileged_groups=unprivileged_groups,
+                privileged_groups=privileged_groups,num_or_size_splits=[0.8],
+                shuffle=False,seed=0)
+
+
+#dataset_m.split(num_or_size_splits=[0.8])
 
 #n=dataset_m.features.shape[0]
 

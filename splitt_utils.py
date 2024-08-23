@@ -4,6 +4,63 @@ import numpy as np
 import pandas as pd
 
 
+def compute_distribution_feature (dm, unprivileged_groups, privileged_groups):
+    
+    df = pd.DataFrame(dm.features,columns=dm.feature_names)
+    
+    #We get class labels
+    y=dm.labels
+    y=np.squeeze(y)
+    y=list(y)
+    
+    #Insert class labels
+    df.insert(loc=len(df.columns),column='ClassLabel',value=y)
+ 
+    keyp=list((privileged_groups[0]).keys())
+
+    print(keyp)
+
+    valuep = list((privileged_groups[0]).values())
+    
+    print(valuep)
+    valueunp = list((unprivileged_groups[0]).values())
+    print(valueunp)
+    
+    
+    #Column Name of the protected attribute
+    sens_attr =keyp[0]
+    #Value of privileged attribute
+    priv_value = valuep[0]
+    
+    #Value of unpriviliged attribute
+    unpriv_value = valueunp[0]
+
+    #Class Label for favorable class
+    fav_label = dm.favorable_label
+    #Class Label for unfavorable class
+    unfav_label = dm.unfavorable_label
+
+
+    idx_priv_fav = df.index[(df[sens_attr] == priv_value) & (df['ClassLabel']==fav_label)].tolist()
+    idx_priv_unfav = df.index[(df[sens_attr] == priv_value) & (df['ClassLabel']==unfav_label)].tolist()
+    idx_unpriv_fav = df.index[(df[sens_attr] == unpriv_value) & (df['ClassLabel']==fav_label)].tolist()
+    idx_unpriv_unfav = df.index[(df[sens_attr] == unpriv_value) & (df['ClassLabel']==unfav_label)].tolist()
+
+    texto1= "Protected Attribute("+sens_attr+"), Unpriviliged("+str(unpriv_value)+") + Unfavorable Class("+str(unfav_label)+")"
+    texto2= "Protected Attribute("+sens_attr+"), Unpriviliged("+str(unpriv_value)+") + Favorable Class("+str(fav_label)+")"
+    texto3= "Protected Attribute("+sens_attr+"), Priviliged("+str(priv_value)+") + Unfavorable Class("+str(unfav_label)+")"
+    texto4= "Protected Attribute("+sens_attr+"), Priviliged("+str(priv_value)+") + Favorable Class("+str(fav_label)+")"
+
+    resume={
+        texto1:len(idx_unpriv_unfav),
+        texto2:len(idx_unpriv_fav),
+        texto3:len(idx_priv_unfav),
+        texto4:len(idx_unpriv_unfav)
+    }
+
+    return resume
+
+
 # Este metodo calcula para un atributo, para cada valor, cuantas muestras hay por clase.
 def compute_feature_class(dm, unprivileged_groups, privileged_groups,sens_ind):
     

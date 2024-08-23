@@ -87,18 +87,21 @@ sens_ind = 0
 
 #new = lista.groupby(['Protected','Etiqueta']).size()
 
-new = su.compute_feature_class(dataset_m=dataset_m,
+new = su.compute_feature_class(dm=dataset_m,
                                unprivileged_groups=unprivileged_groups,
                                privileged_groups=privileged_groups,
                                sens_ind=sens_ind)
 
 print(new)
 
-print(type(new))
+resultado=su.compute_distribution_feature(dataset_m,unprivileged_groups=unprivileged_groups,privileged_groups=privileged_groups)
+
+print(resultado)
+#print(type(new))
 
 df_train, df_test = dataset_m.split([0.8],shuffle=True)
 
-new = su.compute_feature_class(dataset_m=df_train,
+new = su.compute_feature_class(dm=df_train,
                                unprivileged_groups=unprivileged_groups,
                                privileged_groups=privileged_groups,
                                sens_ind=sens_ind)
@@ -108,7 +111,7 @@ print(new)
 
 
 
-new = su.compute_feature_class(dataset_m=df_test,
+new = su.compute_feature_class(dm=df_test,
                                unprivileged_groups=unprivileged_groups,
                                privileged_groups=privileged_groups,
                                sens_ind=sens_ind)

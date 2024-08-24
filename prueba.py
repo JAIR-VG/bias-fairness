@@ -10,16 +10,49 @@ dataset_m = GermanDataset()
 privileged_groups = [{'sex': 1}]
 unprivileged_groups = [{'sex': 0}]
 
-resultado =su.compute_distribution_feature(dm=dataset_m,unprivileged_groups=unprivileged_groups,privileged_groups=privileged_groups)
+#resultado =su.compute_distribution_feature(dm=dataset_m,unprivileged_groups=unprivileged_groups,privileged_groups=privileged_groups)
 
-print(resultado)
+#print(resultado)
 #su.double_split(dm=dataset_m,unprivileged_groups=unprivileged_groups,
 #                privileged_groups=privileged_groups,num_or_size_splits=[0.8],
 #                shuffle=False,seed=0)
+sens_ind = 0
+new = su.compute_feature_class(dm=dataset_m,
+                               unprivileged_groups=unprivileged_groups,
+                               privileged_groups=privileged_groups,
+                               sens_ind=sens_ind)
+
+print(new)
+
+dtrain,dtest=dataset_m.split(num_or_size_splits=[0.8],shuffle=True)
+
+new = su.compute_feature_class(dm=dtrain,
+                               unprivileged_groups=unprivileged_groups,
+                               privileged_groups=privileged_groups,
+                               sens_ind=sens_ind)
+
+print(new)
+
+print('Tamanyo Particion Propuesta Originl TRA ',len(dtrain.features))
+print('Tamanyo Particion Propuesta Originl Test',len(dtest.features))
+
+dtrain2,dtest2 =su.double_split(dm=dataset_m,unprivileged_groups=unprivileged_groups,
+                                privileged_groups=privileged_groups,num_or_size_splits=[0.8],
+                                shuffle=True,seed=0)
 
 
-#dataset_m.split(num_or_size_splits=[0.8])
 
+new = su.compute_feature_class(dm=dtrain2,
+                               unprivileged_groups=unprivileged_groups,
+                               privileged_groups=privileged_groups,
+                               sens_ind=sens_ind)
+
+print(new)
+print('Tamanyo mio Train ',len(dtrain2.features))
+print('Tamanyo mio Test ',len(dtest2.features))
+
+
+#print(len(dtest2.features))
 #n=dataset_m.features.shape[0]
 
 #print(n)

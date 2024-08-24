@@ -114,14 +114,12 @@ def double_split(dm, unprivileged_groups, privileged_groups,num_or_size_splits, 
     if seed is not None:
         np.random.seed(seed)
     
-   # n = dm.features.shape[0]
-
-
+    n = dm.features.shape[0]
 
     if isinstance(num_or_size_splits, list):
         num_folds = len(num_or_size_splits) + 1
-#        if num_folds > 1 and all(x <= 1. for x in num_or_size_splits):
- #           num_or_size_splits = [int(x * n) for x in num_or_size_splits]
+        #if num_folds > 1 and all(x <= 1. for x in num_or_size_splits):
+        #    num_or_size_splits = [int(x * n) for x in num_or_size_splits]
     else:
         num_folds = num_or_size_splits
         
@@ -160,137 +158,153 @@ def double_split(dm, unprivileged_groups, privileged_groups,num_or_size_splits, 
    # print(df[sens_attr])
 
     #Indices considerando valores de atributos 
-    idx_priv_fav = df.index[(df[sens_attr] == priv_value) & (df['ClassLabel']==fav_label)].tolist()
-    idx_priv_unfav = df.index[(df[sens_attr] == priv_value) & (df['ClassLabel']==unfav_label)].tolist()
-    idx_unpriv_fav = df.index[(df[sens_attr] == unpriv_value) & (df['ClassLabel']==fav_label)].tolist()
-    idx_unpriv_unfav = df.index[(df[sens_attr] == unpriv_value) & (df['ClassLabel']==unfav_label)].tolist()
+    n_priv_fav = df.index[(df[sens_attr] == priv_value) & (df['ClassLabel']==fav_label)].tolist()
+    n_priv_unfav = df.index[(df[sens_attr] == priv_value) & (df['ClassLabel']==unfav_label)].tolist()
+    n_unpriv_fav = df.index[(df[sens_attr] == unpriv_value) & (df['ClassLabel']==fav_label)].tolist()
+    n_unpriv_unfav = df.index[(df[sens_attr] == unpriv_value) & (df['ClassLabel']==unfav_label)].tolist()
 
-    if shuffle:
-        idx_priv_fav = list(np.random.permutation(idx_priv_fav))
-        idx_priv_unfav = list(np.random.permutation(idx_priv_unfav))
-        idx_unpriv_fav = list(np.random.permutation(idx_unpriv_fav))
-        idx_unpriv_unfav = list(np.random.permutation(idx_unpriv_unfav))
+    
+    order_priv_fav = list(np.random.permutation(n_priv_fav) if shuffle else n_priv_fav)
+    order_priv_unfav = list(np.random.permutation(n_priv_unfav) if shuffle else n_priv_unfav)
+    order_unpriv_fav = list(np.random.permutation(n_unpriv_fav) if shuffle else n_unpriv_fav)
+    order_unpriv_unfav = list(np.random.permutation(n_unpriv_unfav) if shuffle else n_unpriv_unfav)
 
-
-    print(len(idx_priv_fav))
-    print(len(idx_priv_unfav))
-    print(len(idx_unpriv_fav))
-    print(len(idx_unpriv_unfav))
-
-    #print([int(x * len(idx_priv_fav)) for x in num_or_size_splits])
-
+    folds = [dm.copy() for _ in range(num_folds)]
 
     if isinstance(num_or_size_splits, list):
-        #Operations for priviliged and favorable
-        n_o_s_s = [int(x * len(idx_priv_fav)) for x in num_or_size_splits]
-        print(n_o_s_s)
-        feat_priv_fav = np.array_split(dm.features[idx_priv_fav],
-                                       n_o_s_s)
-        lab_priv_fav = np.array_split(dm.labels[idx_priv_fav],
-                                      n_o_s_s)
-        scor_priv_fav = np.array_split(dm.scores[idx_priv_fav],
-                                       n_o_s_s)
-        prot_att_priv_fav = np.array_split(dm.protected_attributes[idx_priv_fav],
-                                           n_o_s_s)
-        inst_w_priv_fav = np.array_split(dm.instance_weights[idx_priv_fav],
-                                         n_o_s_s)
-        inst_nam_priv_fav = np.array_split(np.array(dm.instance_names)[idx_priv_fav],
-                                           n_o_s_s)
+        if num_folds > 1 and all(x <= 1. for x in num_or_size_splits):
+            num_or_size_splits_priv_fav = [int(x * len(n_priv_fav)) for x in num_or_size_splits]
+            num_or_size_splits_priv_unfav = [int(x * len(n_priv_unfav)) for x in num_or_size_splits]
+            num_or_size_splits_unpriv_fav = [int(x * len(n_unpriv_fav)) for x in num_or_size_splits]
+            num_or_size_splits_unpriv_unfav = [int(x * len(n_unpriv_unfav)) for x in num_or_size_splits]
+            num_or_size_splits = [int(x * n) for x in num_or_size_splits]
+    else:
+        num_or_size_splits_priv_fav = num_or_size_splits
+        num_or_size_splits_priv_unfav = num_or_size_splits
+        num_or_size_splits_unpriv_fav = num_or_size_splits
+        num_or_size_splits_unpriv_unfav = num_or_size_splits
+        num_or_size_splits = num_or_size_splits
 
+
+    #print(len(n_priv_fav))
+    #print(len(n_priv_unfav))
+    #print(len(n_unpriv_fav))
+    #print(len(n_unpriv_unfav))
+
+    #print(order_priv_fav)
+
+    #print(num_or_size_splits)
+    #print(dm.features[order_priv_fav])
+    feat_priv_fav = np.array_split(dm.features[order_priv_fav],
+                                   num_or_size_splits_priv_fav)
+    lab_priv_fav = np.array_split(dm.labels[order_priv_fav],
+                                  num_or_size_splits_priv_fav)
+    scor_priv_fav = np.array_split(dm.scores[order_priv_fav],
+                                   num_or_size_splits_priv_fav)
+    prot_att_priv_fav = np.array_split(dm.protected_attributes[order_priv_fav],
+                                       num_or_size_splits_priv_fav)
+    inst_w_priv_fav = np.array_split(dm.instance_weights[order_priv_fav],
+                                     num_or_size_splits_priv_fav)
+    inst_nam_priv_fav = np.array_split(np.array(dm.instance_names)[order_priv_fav],
+                                       num_or_size_splits_priv_fav)
+    
+    feat_priv_unfav = np.array_split(dm.features[order_priv_unfav],
+                                     num_or_size_splits_priv_unfav)
+    lab_priv_unfav = np.array_split(dm.labels[order_priv_unfav],
+                                    num_or_size_splits_priv_unfav)
+    scor_priv_unfav = np.array_split(dm.scores[order_priv_unfav],
+                                     num_or_size_splits_priv_unfav)
+    prot_att_priv_unfav = np.array_split(dm.protected_attributes[order_priv_unfav],
+                                     num_or_size_splits_priv_unfav)
+    inst_w_priv_unfav = np.array_split(dm.instance_weights[order_priv_unfav],
+                                       num_or_size_splits_priv_unfav)
+    inst_nam_priv_unfav = np.array_split(np.array(dm.instance_names)[order_priv_unfav],
+                                         num_or_size_splits_priv_unfav)
+
+
+    feat_unpriv_fav = np.array_split(dm.features[order_unpriv_fav],
+                                   num_or_size_splits_unpriv_fav)
+    lab_unpriv_fav = np.array_split(dm.labels[order_unpriv_fav],
+                                  num_or_size_splits_unpriv_fav)
+    scor_unpriv_fav = np.array_split(dm.scores[order_unpriv_fav],
+                                   num_or_size_splits_unpriv_fav)
+    prot_att_unpriv_fav = np.array_split(dm.protected_attributes[order_unpriv_fav],
+                                       num_or_size_splits_unpriv_fav)
+    inst_w_unpriv_fav = np.array_split(dm.instance_weights[order_unpriv_fav],
+                                     num_or_size_splits_unpriv_fav)
+    inst_nam_unpriv_fav = np.array_split(np.array(dm.instance_names)[order_unpriv_fav],
+                                       num_or_size_splits_unpriv_fav)
+    
+
+    feat_unpriv_unfav = np.array_split(dm.features[order_unpriv_unfav],
+                                       num_or_size_splits_unpriv_unfav)
+    lab_unpriv_unfav = np.array_split(dm.labels[order_unpriv_unfav],
+                                      num_or_size_splits_unpriv_unfav)
+    scor_unpriv_unfav = np.array_split(dm.scores[order_unpriv_unfav],
+                                       num_or_size_splits_unpriv_unfav)
+    prot_att_unpriv_unfav = np.array_split(dm.protected_attributes[order_unpriv_unfav],
+                                     num_or_size_splits_unpriv_unfav)
+    inst_w_unpriv_unfav = np.array_split(dm.instance_weights[order_unpriv_unfav],
+                                       num_or_size_splits_unpriv_unfav)
+    inst_nam_unpriv_unfav = np.array_split(np.array(dm.instance_names)[order_unpriv_unfav],
+                                         num_or_size_splits_unpriv_unfav)
+
+    print('Size feat_priv_fav ',len(feat_priv_fav[0]))
+    #print('Size feat_priv_fav ',len(feat_priv_fav[1]))
+    print('Size feat_priv_unfav ',len(feat_priv_unfav[0]))
+    print('Size feat_unpriv_fav ',len(feat_unpriv_fav[0]))
+    print('Size feat_unpriv_unfav ',len(feat_unpriv_unfav[0]))
+
+    #print(feat_priv_fav)
+    features = feat_priv_fav
+    labels = lab_priv_fav
+    scores = scor_priv_fav
+    protected_attributes = prot_att_priv_fav
+    instance_weights = inst_w_priv_fav
+    instance_names = inst_nam_priv_fav
+    
+   # print('Num folds',num_folds)
+    for i in range(num_folds):
+        features[i] = np.concatenate((feat_priv_fav[i],feat_priv_unfav[i],
+                                feat_unpriv_fav[i],feat_unpriv_unfav[i]),
+                                axis=0)
+    #    print(features[i])
+        labels[i]=np.concatenate((lab_priv_fav[i],lab_priv_unfav[i],
+                            lab_unpriv_fav[i],lab_unpriv_unfav[i]),
+                            axis=0)
+        scores[i]=np.concatenate((scor_priv_fav[i],scor_priv_unfav[i],
+                            scor_unpriv_fav[i],scor_unpriv_unfav[i]),
+                            axis=0)
+        protected_attributes[i]=np.concatenate((prot_att_priv_fav[i],prot_att_priv_unfav[i],
+                                          prot_att_unpriv_fav[i],prot_att_unpriv_unfav[i]),
+                                          axis=0)
+        instance_weights[i]=np.concatenate((inst_w_priv_fav[i],inst_w_priv_unfav[i],
+                                      inst_w_unpriv_fav[i],inst_w_unpriv_unfav[i]),
+                                      axis=0)
+        instance_names[i] = np.concatenate((inst_nam_priv_fav[i],inst_nam_priv_unfav[i],
+                                      inst_nam_unpriv_fav[i],inst_nam_unpriv_unfav[i]),
+                                      axis=0)
+    
+ #   print('Features',len(features))
         
-        #Operations for priviliged and unfavorable
-        n_o_s_s = [int(x * len(idx_priv_unfav)) for x in num_or_size_splits]
-        print(n_o_s_s)
-        feat_priv_unfav = np.array_split(dm.features[idx_priv_unfav],
-                                         n_o_s_s)
-        lab_priv_unfav = np.array_split(dm.labels[idx_priv_unfav],
-                                        n_o_s_s)
-        scor_priv_unfav = np.array_split(dm.scores[idx_priv_unfav],
-                                         n_o_s_s)
-        prot_att_priv_unfav = np.array_split(dm.protected_attributes[idx_priv_unfav],
-                                             n_o_s_s)
-        inst_w_priv_unfav = np.array_split(dm.instance_weights[idx_priv_unfav],
-                                           n_o_s_s)
-        inst_nam_priv_unfav = np.array_split(np.array(dm.instance_names)[idx_priv_unfav],
-                                             n_o_s_s)
+    for fold, feats, labs, scors, prot_attrs, inst_wgts, inst_name in zip(
+        folds, features, labels, scores, protected_attributes, instance_weights,
+        instance_names):
+        fold.features = feats
+        fold.labels = labs
+        fold.scores = scors
+        fold.protected_attributes = prot_attrs
+        fold.instance_weights = inst_wgts
+        fold.instance_names = list(map(str, inst_name))
+        fold.metadata = fold.metadata.copy()
+        fold.metadata.update({
+            'transformer': '{}.split'.format(type(dm).__name__),
+            'params': {'num_or_size_splits': num_or_size_splits,
+                       'shuffle': shuffle},
+                       'previous': [dm]
+                       })
 
-         #Operations for unpriviliged and favorable
-        n_o_s_s = [int(x * len(idx_unpriv_fav)) for x in num_or_size_splits]
-        print(n_o_s_s)
-        feat_unpriv_fav = np.array_split(dm.features[idx_unpriv_fav],
-                                         n_o_s_s)
-        lab_unpriv_fav = np.array_split(dm.labels[idx_unpriv_fav],
-                                        n_o_s_s)
-        scor_unpriv_fav = np.array_split(dm.scores[idx_unpriv_fav],
-                                         n_o_s_s)
-        prot_att_unpriv_fav = np.array_split(dm.protected_attributes[idx_unpriv_fav],
-                                             n_o_s_s)
-        inst_w_unpriv_fav = np.array_split(dm.instance_weights[idx_unpriv_fav],
-                                           n_o_s_s)
-        inst_nam_unpriv_fav = np.array_split(np.array(dm.instance_names)[idx_unpriv_fav],
-                                             n_o_s_s)
-
-         #Operations for unpriviliged and unfavorable
-        n_o_s_s = [int(x * len(idx_unpriv_unfav)) for x in num_or_size_splits]
-        print(n_o_s_s)
-        feat_unpriv_unfav = np.array_split(dm.features[idx_unpriv_unfav],
-                                           n_o_s_s)
-        lab_unpriv_unfav = np.array_split(dm.labels[idx_unpriv_unfav],
-                                          n_o_s_s)
-        scor_unpriv_unfav = np.array_split(dm.scores[idx_unpriv_unfav],
-                                           n_o_s_s)
-        prot_att_unpriv_unfav = np.array_split(dm.protected_attributes[idx_unpriv_unfav],
-                                               n_o_s_s)
-        inst_w_unpriv_unfav = np.array_split(dm.instance_weights[idx_unpriv_unfav],
-                                             n_o_s_s)
-        inst_nam_unpriv_unfav = np.array_split(np.array(dm.instance_names)[idx_unpriv_unfav],
-                                               n_o_s_s)
-
-        feat_tra=np.append(feat_priv_fav[0],feat_priv_unfav[0],
-                           feat_unpriv_fav[0],feat_unpriv_unfav,
-                           axis=0)
-        print(feat_tra.shape)
-        
-    #print(type(feat_priv_fav))
-    #print(len(feat_priv_fav))
-    #print(feat_priv_fav[0].shape)
-    #print(feat_priv_fav[1].shape)
-    #np_newarray=np.append(feat_priv_fav[0],feat_priv_fav[1],axis=0)
-    #print(np_newarray.shape)
-    #print(np_newarray)
-        
-        #labels = np.array_split(self.labels[order], num_or_size_splits)
-
-    #print(idx_priv_unfav)
-    #print(idx_unpriv_fav)
-    #print(idx_unpriv_unfav)
-    #print(dm.labels)
-    #print(np.unique(np.array(dm.labels)))
-
-
-    
-    #print(df)
-    #Variable importante es num_or_size splits
-
-    
-    
-    #order = list(np.random.permutation(n) if shuffle else range(n))
-    
-    
-    # Crea n copias del dataaset
-    #folds = [dm.copy() for _ in range(num_folds)]
-
-
-
-    #print(folds)
-    #print(dm.favorable_label, dm.unfavorable_label)
-    #print(dm.privileged_protected_attributes,
-    #      dm.unprivileged_protected_attributes)
-    #print(dm.protected_attributes)
-    #print(dm.protected_attribute_names)
-    #print(dm.feature_names)
-    #print(dm.features)
-
+    return folds
 #Si num_or_size_splits es un número entero que indica folds, crea n-folds. Si es 5 creará 5 conjuntos
 #Si num_or_size_splits es un número entero que indica el número de muestras a elegir, entonces formará un conjunto con que tiene ese número
 #Por ejemplo [800] que representa el 80% selecciona [800 muestras] y el resto [200]

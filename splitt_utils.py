@@ -169,6 +169,11 @@ def double_split(dm, unprivileged_groups, privileged_groups,num_or_size_splits, 
     order_unpriv_fav = list(np.random.permutation(n_unpriv_fav) if shuffle else n_unpriv_fav)
     order_unpriv_unfav = list(np.random.permutation(n_unpriv_unfav) if shuffle else n_unpriv_unfav)
 
+    print(len(order_priv_fav))
+    print(len(order_priv_unfav))
+    print(len(order_unpriv_fav))
+    print(len(order_unpriv_unfav))
+
     folds = [dm.copy() for _ in range(num_folds)]
 
     if isinstance(num_or_size_splits, list):
@@ -249,11 +254,17 @@ def double_split(dm, unprivileged_groups, privileged_groups,num_or_size_splits, 
     inst_nam_unpriv_unfav = np.array_split(np.array(dm.instance_names)[order_unpriv_unfav],
                                          num_or_size_splits_unpriv_unfav)
 
-    print('Size feat_priv_fav ',len(feat_priv_fav[0]))
+    print('Size feat_priv_fav 80 ',len(feat_priv_fav[0]))
     #print('Size feat_priv_fav ',len(feat_priv_fav[1]))
-    print('Size feat_priv_unfav ',len(feat_priv_unfav[0]))
-    print('Size feat_unpriv_fav ',len(feat_unpriv_fav[0]))
-    print('Size feat_unpriv_unfav ',len(feat_unpriv_unfav[0]))
+    print('Size feat_priv_unfav 80 ',len(feat_priv_unfav[0]))
+    print('Size feat_unpriv_fav 80',len(feat_unpriv_fav[0]))
+    print('Size feat_unpriv_unfav 80',len(feat_unpriv_unfav[0]))
+
+    print('Size feat_priv_fav 20 ',len(feat_priv_fav[1]))
+    #print('Size feat_priv_fav ',len(feat_priv_fav[1]))
+    print('Size feat_priv_unfav 20 ',len(feat_priv_unfav[1]))
+    print('Size feat_unpriv_fav 20',len(feat_unpriv_fav[1]))
+    print('Size feat_unpriv_unfav 20',len(feat_unpriv_unfav[1]))
 
     #print(feat_priv_fav)
     features = feat_priv_fav
@@ -268,7 +279,7 @@ def double_split(dm, unprivileged_groups, privileged_groups,num_or_size_splits, 
         features[i] = np.concatenate((feat_priv_fav[i],feat_priv_unfav[i],
                                 feat_unpriv_fav[i],feat_unpriv_unfav[i]),
                                 axis=0)
-    #    print(features[i])
+        print(len(features[i]))
         labels[i]=np.concatenate((lab_priv_fav[i],lab_priv_unfav[i],
                             lab_unpriv_fav[i],lab_unpriv_unfav[i]),
                             axis=0)

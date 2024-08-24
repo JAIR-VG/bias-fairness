@@ -24,17 +24,17 @@ new = su.compute_feature_class(dm=dataset_m,
 
 print(new)
 
-dtrain,dtest=dataset_m.split(num_or_size_splits=[0.8],shuffle=True)
+#dtrain,dtest=dataset_m.split(num_or_size_splits=[0.8],shuffle=True)
 
-new = su.compute_feature_class(dm=dtrain,
-                               unprivileged_groups=unprivileged_groups,
-                               privileged_groups=privileged_groups,
-                               sens_ind=sens_ind)
+#new = su.compute_feature_class(dm=dtrain,
+#                               unprivileged_groups=unprivileged_groups,
+#                               privileged_groups=privileged_groups,
+#                               sens_ind=sens_ind)
 
-print(new)
+#print(new)
 
-print('Tamanyo Particion Propuesta Originl TRA ',len(dtrain.features))
-print('Tamanyo Particion Propuesta Originl Test',len(dtest.features))
+#print('Tamanyo Particion Propuesta Originl TRA ',len(dtrain.features))
+#print('Tamanyo Particion Propuesta Originl Test',len(dtest.features))
 
 dtrain2,dtest2 =su.double_split(dm=dataset_m,unprivileged_groups=unprivileged_groups,
                                 privileged_groups=privileged_groups,num_or_size_splits=[0.8],

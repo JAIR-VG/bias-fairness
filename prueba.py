@@ -24,8 +24,8 @@ new = su.compute_feature_class(dm=dataset_m,
 
 print(new)
 
-#dtrain,dtest=dataset_m.split(num_or_size_splits=[0.8],shuffle=True)
-
+dtrain,dtest=dataset_m.split(num_or_size_splits=[0.8],shuffle=True)
+print(dtrain.labels.ravel())
 #new = su.compute_feature_class(dm=dtrain,
 #                               unprivileged_groups=unprivileged_groups,
 #                               privileged_groups=privileged_groups,

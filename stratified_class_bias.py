@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 
+from sklearn.model_selection import train_test_split
+from sklearn import datasets
 
 from aif360.metrics import ClassificationMetric
 from aif360.datasets import GermanDataset
@@ -26,5 +28,17 @@ unprivileged_groups = [{'sex': 0}]
 dorig_train, dorig_test = dorig.split([0.8],shuffle=True)
 
 print(dorig_test.labels)
-print(dorig_test.labels.ravel())
+print(dorig_test.labels.ravel()) 
+#convierte en el formato requerido
 
+iris = datasets.load_iris() #Loading the datasetç
+
+X = iris.data[:, [2, 3]]
+y = iris.target
+
+print(y)
+
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.5, random_state=42)
+
+print(X_test)
+print(y_test)

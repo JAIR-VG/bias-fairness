@@ -8,41 +8,46 @@ from aif360.datasets import BankDataset
 from aif360.datasets import AdultDataset
 from aif360.datasets import MEPSDataset19
 from aif360.datasets import CompasDataset
+from aif360.datasets import GermanDataset
 #dataset_orig =BankDataset()
 
-privileged_groups = [{'race': 1}]
-unprivileged_groups = [{'race': 0}]
-dataset_orig = load_preproc_data_compas(['race'])
+#privileged_groups = [{'race': 1}]
+#unprivileged_groups = [{'race': 0}]
+#dataset_orig = load_preproc_data_compas(['race'])
 
 # print out some labels, names, etc.
-print("#### Training Dataset shape")
-print(dataset_orig.features.shape,type(dataset_orig.features))
+#print("#### Training Dataset shape")
+#print(dataset_orig.features.shape,type(dataset_orig.features))
 
-print("#### Favorable and unfavorable labels")
-print(dataset_orig.favorable_label, dataset_orig.unfavorable_label)
+#print("#### Favorable and unfavorable labels")
+#print(dataset_orig.favorable_label, dataset_orig.unfavorable_label)
 
-print("#### Protected attribute names")
-print(dataset_orig.protected_attribute_names)
+#print("#### Protected attribute names")
+#print(dataset_orig.protected_attribute_names)
 
-print("#### Privileged and unprivileged protected attribute values")
-print(dataset_orig.privileged_protected_attributes, 
-      dataset_orig.unprivileged_protected_attributes)
+#print("#### Privileged and unprivileged protected attribute values")
+#print(dataset_orig.privileged_protected_attributes, 
+#      dataset_orig.unprivileged_protected_attributes)
 
-print("#### Dataset feature names")
-print(dataset_orig.feature_names)
-print()
+#print("#### Dataset feature names")
+#print(dataset_orig.feature_names)
+#print()
 
 
 #from aif360.datasets import GermanDataset
 
-#dataset_m = GermanDataset()
+dataset_m = GermanDataset()
 
-#privileged_groups = [{'sex': 1}]
-#unprivileged_groups = [{'sex': 0}]
+privileged_groups = [{'sex': 1}]
+unprivileged_groups = [{'sex': 0}]
 
-#resultado =su.compute_distribution_feature(dm=dataset_m,unprivileged_groups=unprivileged_groups,privileged_groups=privileged_groups)
+resultado =su.compute_distribution_feature(dm=dataset_m,unprivileged_groups=unprivileged_groups,privileged_groups=privileged_groups)
 
-#print(resultado)
+print(resultado)
+
+sens_ind = 0
+resultado = su.compute_feature_class(dm=dataset_m,unprivileged_groups=unprivileged_groups,privileged_groups=privileged_groups,sens_ind=sens_ind)
+print(resultado)
 #su.double_split(dm=dataset_m,unprivileged_groups=unprivileged_groups,
 #                privileged_groups=privileged_groups,num_or_size_splits=[0.8],
 #                shuffle=False,seed=0)

@@ -55,7 +55,7 @@ def compute_distribution_feature (dm, unprivileged_groups, privileged_groups):
         texto1:len(idx_unpriv_unfav),
         texto2:len(idx_unpriv_fav),
         texto3:len(idx_priv_unfav),
-        texto4:len(idx_unpriv_unfav)
+        texto4:len(idx_priv_fav)
     }
 
     return resume
@@ -99,30 +99,26 @@ def compute_feature_class(dm, unprivileged_groups, privileged_groups,sens_ind):
 
     return resume
 
-    #print(df)
-    #return df
-    #print(dm.features.shape)
-    #y=dm.labels
-    #x= dm.features
-    #print(type(x))
-    #print(type(y))
-    #print(y.shape)
-    #print(y.ndim)
-
+  
 def double_split(dm, unprivileged_groups, privileged_groups,num_or_size_splits, shuffle=False,seed =None):
+#Input variables
+#   dm: dataset in format aif360
+#   unprivileged_groups, priviliged_groups: list dictionary
+#   num_or_size_splits: it can be a real number [0.7] or integer number of K-folds
+
 
     if seed is not None:
         np.random.seed(seed)
     
     n = dm.features.shape[0]
 
+    #Determine the number of folds
     if isinstance(num_or_size_splits, list):
         num_folds = len(num_or_size_splits) + 1
-        #if num_folds > 1 and all(x <= 1. for x in num_or_size_splits):
-        #    num_or_size_splits = [int(x * n) for x in num_or_size_splits]
     else:
         num_folds = num_or_size_splits
-        
+    
+    #Convert the dataset-aif360 in dataframe to get indices
     df = pd.DataFrame(dm.features,columns=dm.feature_names)
 
     y=dm.labels
@@ -150,29 +146,23 @@ def double_split(dm, unprivileged_groups, privileged_groups,num_or_size_splits, 
     #Class Label for unfavorable class
     unfav_label = dm.unfavorable_label
 
-  #  print(sens_attr)
-  #  print(priv_value)
-  #  print(unpriv_value)
-  #  print(fav_label)
-  #  print(unfav_label)
-   # print(df[sens_attr])
+
 
     #Indices considerando valores de atributos 
+    #get indices for each kind of class and priviliged/unpriviliged group
     n_priv_fav = df.index[(df[sens_attr] == priv_value) & (df['ClassLabel']==fav_label)].tolist()
     n_priv_unfav = df.index[(df[sens_attr] == priv_value) & (df['ClassLabel']==unfav_label)].tolist()
     n_unpriv_fav = df.index[(df[sens_attr] == unpriv_value) & (df['ClassLabel']==fav_label)].tolist()
     n_unpriv_unfav = df.index[(df[sens_attr] == unpriv_value) & (df['ClassLabel']==unfav_label)].tolist()
 
-    
+    #random order of indices
     order_priv_fav = list(np.random.permutation(n_priv_fav) if shuffle else n_priv_fav)
     order_priv_unfav = list(np.random.permutation(n_priv_unfav) if shuffle else n_priv_unfav)
     order_unpriv_fav = list(np.random.permutation(n_unpriv_fav) if shuffle else n_unpriv_fav)
     order_unpriv_unfav = list(np.random.permutation(n_unpriv_unfav) if shuffle else n_unpriv_unfav)
 
     #print(len(order_priv_fav))
-    #print(len(order_priv_unfav))
-    #print(len(order_unpriv_fav))
-    #print(len(order_unpriv_unfav))
+
 
     folds = [dm.copy() for _ in range(num_folds)]
 

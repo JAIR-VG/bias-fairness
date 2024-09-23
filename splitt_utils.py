@@ -310,3 +310,33 @@ def double_split(dm, unprivileged_groups, privileged_groups,num_or_size_splits, 
 #Si num_or_size_splits es un número entero que indica el número de muestras a elegir, entonces formará un conjunto con que tiene ese número
 #Por ejemplo [800] que representa el 80% selecciona [800 muestras] y el resto [200]
 #    features = np.array_split(dm.features[order], num_or_size_splits)
+
+
+def get_folds(dm, idxtrain, idxtest):
+
+    data_train = dm.copy()
+    data_test = dm.copy()
+
+    data_train.features = dm.features[idxtrain]
+    data_train.labels = dm.labels[idxtrain]
+    data_train.scores = dm.scores[idxtrain]
+    data_train.protected_attributes = dm.protected_attributes[idxtrain]
+    data_train.instance_weights = dm.instance_weights[idxtrain]
+    data_train.instance_names = list(map(str,np.array(dm.instance_names)[idxtrain]))
+    data_train.metadata = data_train.metadata.copy()
+    data_train.metadata.update({'transformer':'sklearn.cross_validation.StratifiedKFold',
+                                'params':5,'previous':[dm]}
+                               )
+    
+    data_test.features = dm.features[idxtest]
+    data_test.labels = dm.labels[idxtest]
+    data_test.scores = dm.scores[idxtest]
+    data_test.protected_attributes = dm.protected_attributes[idxtest]
+    data_test.instance_weights = dm.instance_weights[idxtest]
+    data_test.instance_names = list(map(str,np.array(dm.instance_names)[idxtest]))
+    data_test.metadata = data_test.metadata.copy()
+    data_test.metadata.update({'transformer':'sklearn.cross_validation.StratifiedKFold',
+                                'params':5,'previous':[dm]}
+                               )
+    
+    return data_train,data_test

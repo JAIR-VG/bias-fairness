@@ -34,7 +34,7 @@ shuffle = False
 #print(dorig.instance_names)
 #print(dorig.labels.ravel())
 
-skf=StratifiedKFold(n_splits=5)
+skf=StratifiedKFold(n_splits=5,random_state=0)
 sens_ind = 0
 X=dorig.features
 y=dorig.labels.ravel()

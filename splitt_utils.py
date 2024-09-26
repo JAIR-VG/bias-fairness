@@ -99,8 +99,10 @@ def compute_feature_class(dm, unprivileged_groups, privileged_groups,sens_ind):
 
     return resume
 
-  
-def double_split(dm, unprivileged_groups, privileged_groups,num_or_size_splits, shuffle=False,seed =None):
+  #Double split devuelve particiones 
+def double_split(dm, unprivileged_groups, 
+                 privileged_groups,num_or_size_splits, 
+                 shuffle=False,seed =None):
 #Input variables
 #   dm: dataset in format aif360
 #   unprivileged_groups, priviliged_groups: list dictionary
@@ -150,14 +152,19 @@ def double_split(dm, unprivileged_groups, privileged_groups,num_or_size_splits, 
 
     #Indices considerando valores de atributos 
     #get indices for each kind of class and priviliged/unpriviliged group
+    #n_priv_fav, n_priv_unfav, etc. are array indices
     n_priv_fav = df.index[(df[sens_attr] == priv_value) & (df['ClassLabel']==fav_label)].tolist()
+    print(n_priv_fav)
     n_priv_unfav = df.index[(df[sens_attr] == priv_value) & (df['ClassLabel']==unfav_label)].tolist()
+    #print(n_priv_unfav)
     n_unpriv_fav = df.index[(df[sens_attr] == unpriv_value) & (df['ClassLabel']==fav_label)].tolist()
     n_unpriv_unfav = df.index[(df[sens_attr] == unpriv_value) & (df['ClassLabel']==unfav_label)].tolist()
 
     #random order of indices
     order_priv_fav = list(np.random.permutation(n_priv_fav) if shuffle else n_priv_fav)
+    print(order_priv_fav)
     order_priv_unfav = list(np.random.permutation(n_priv_unfav) if shuffle else n_priv_unfav)
+    #print(order_priv_unfav)
     order_unpriv_fav = list(np.random.permutation(n_unpriv_fav) if shuffle else n_unpriv_fav)
     order_unpriv_unfav = list(np.random.permutation(n_unpriv_unfav) if shuffle else n_unpriv_unfav)
 
@@ -312,6 +319,8 @@ def double_split(dm, unprivileged_groups, privileged_groups,num_or_size_splits, 
 #    features = np.array_split(dm.features[order], num_or_size_splits)
 
 
+#Devuelve particiones de entrenamiento y test en formato AIF360
+
 def get_folds(dm, idxtrain, idxtest):
 
     data_train = dm.copy()
@@ -340,3 +349,92 @@ def get_folds(dm, idxtrain, idxtest):
                                )
     
     return data_train,data_test
+
+#Funcion para generar indices de entrenamiento y test - Es necesario mejorar la salida
+def stratified_double(dm, unprivileged_groups, 
+                      privileged_groups, 
+                      num_or_size_splits, 
+                      shuffle=False,seed =None):
+    
+    if seed is not None:
+        np.random.seed(seed)
+    
+    n = dm.features.shape[0]
+    num_folds = num_or_size_splits
+
+    df = pd.DataFrame(dm.features,columns=dm.feature_names)
+
+    y=dm.labels
+    y=np.squeeze(y)
+    y=list(y)
+    
+    df.insert(loc=len(df.columns),column='ClassLabel',value=y)
+
+ 
+    keyp=list((privileged_groups[0]).keys())
+
+    valuep = list((privileged_groups[0]).values())
+    
+    valueunp = list((unprivileged_groups[0]).values())
+    
+    #Column Name of the protected attribute
+    sens_attr =keyp[0]
+    #Value of privileged attribute
+    priv_value = valuep[0]
+    #Value of unpriviliged attribute
+    unpriv_value = valueunp[0]
+
+    #Class Label for favorable class
+    fav_label = dm.favorable_label
+    #Class Label for unfavorable class
+    unfav_label = dm.unfavorable_label
+
+
+
+    #Indices considerando valores de atributos 
+    #get indices for each kind of class and priviliged/unpriviliged group
+    n_priv_fav = df.index[(df[sens_attr] == priv_value) & (df['ClassLabel']==fav_label)].tolist()
+    n_priv_unfav = df.index[(df[sens_attr] == priv_value) & (df['ClassLabel']==unfav_label)].tolist()
+    n_unpriv_fav = df.index[(df[sens_attr] == unpriv_value) & (df['ClassLabel']==fav_label)].tolist()
+    n_unpriv_unfav = df.index[(df[sens_attr] == unpriv_value) & (df['ClassLabel']==unfav_label)].tolist()
+
+    #random order of indices
+    order_priv_fav = list(np.random.permutation(n_priv_fav) if shuffle else n_priv_fav)
+    order_priv_unfav = list(np.random.permutation(n_priv_unfav) if shuffle else n_priv_unfav)
+    order_unpriv_fav = list(np.random.permutation(n_unpriv_fav) if shuffle else n_unpriv_fav)
+    order_unpriv_unfav = list(np.random.permutation(n_unpriv_unfav) if shuffle else n_unpriv_unfav)
+
+    fold_priv_fav=np.array_split(order_priv_fav,num_folds)
+    fold_priv_unfav=np.array_split(order_priv_unfav,num_folds)
+    fold_unpriv_fav=np.array_split(order_unpriv_fav,num_folds)
+    fold_unpriv_unfav=np.array_split(order_unpriv_unfav,num_folds)
+
+    idx_test=np.empty(num_folds,dtype=object)
+    
+    for i_fold in range(num_folds):
+        priv=np.concatenate((fold_priv_fav[i_fold],fold_priv_unfav[i_fold]))
+        unpriv=np.concatenate((fold_unpriv_fav[i_fold],fold_unpriv_unfav[i_fold]))
+        idx_test[i_fold]=np.concatenate((priv,unpriv))
+    
+
+    idx_train=np.empty(num_folds,dtype=object)
+
+    for i_fold in range(num_folds):
+        R=[]
+      #  print(i_fold)
+        for item,myfold in enumerate(idx_test):
+            #print(myfold)
+      #      print(myfold.size)
+            if i_fold != item:
+      #          print(item)
+                R=np.concatenate((R,myfold))
+                #print(R)
+        #print(R)
+       # print(R.astype(int))
+        idx_train[i_fold]=R.astype(int)
+
+    #for item,myfold in enumerate(idx_test):
+    #    print (item)
+    #    print(myfold)
+
+    return idx_train,idx_test

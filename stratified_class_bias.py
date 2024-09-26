@@ -34,22 +34,28 @@ shuffle = False
 #print(dorig.instance_names)
 #print(dorig.labels.ravel())
 
-skf=StratifiedKFold(n_splits=5,random_state=0)
+skf=StratifiedKFold(n_splits=5,shuffle=True,random_state=0)
+
 sens_ind = 0
 X=dorig.features
 y=dorig.labels.ravel()
-for i, (train_index,test_index) in enumerate(skf.split(X,y)):
-        print(f"Fold {i}: ")
+print(skf.get_n_splits(X,y))
+
+for train_index, test_index in skf.split(X,y):
+    print(train_index)
+    print(test_index)
+#for i, (train_index,test_index) in enumerate(skf.split(X,y)):
+#        print(f"Fold {i}: ")
         #print(f"  Train: index={train_index}")
         #print(f"  Test:  index={test_index}")
-        type(train_index)
-        type(test_index)
-        dtra,dtest = my_su.get_folds(dorig,train_index,test_index)
-        resultado =my_su.compute_feature_class(dm=dtra,unprivileged_groups=unprivileged_groups,
-                                               privileged_groups=privileged_groups,
-                                               sens_ind=sens_ind)
-        print("Resultado de entrenamiento ")
-        print(resultado)
+#        type(train_index)
+#        type(test_index)
+#        dtra,dtest = my_su.get_folds(dorig,train_index,test_index)
+#        resultado =my_su.compute_feature_class(dm=dtra,unprivileged_groups=unprivileged_groups,
+#                                               privileged_groups=privileged_groups,
+#                                               sens_ind=sens_ind)
+#        print("Resultado de entrenamiento ")
+#        print(resultado)
 
         #print(dtest.instance_names)
 

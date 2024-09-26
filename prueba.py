@@ -1,15 +1,56 @@
 import numpy as np
 import pandas as pd
 
-import splitt_utils as su
+import splitt_utils as SU
 
-from aif360.algorithms.preprocessing.optim_preproc_helpers.data_preproc_functions import load_preproc_data_compas
-from aif360.datasets import BankDataset
-from aif360.datasets import AdultDataset
-from aif360.datasets import MEPSDataset19
-from aif360.datasets import CompasDataset
+#from aif360.algorithms.preprocessing.optim_preproc_helpers.data_preproc_functions import load_preproc_data_compas
+#from aif360.datasets import BankDataset
+#from aif360.datasets import AdultDataset
+#from aif360.datasets import MEPSDataset19
+#from aif360.datasets import CompasDataset
 from aif360.datasets import GermanDataset
 #dataset_orig =BankDataset()
+
+
+
+
+
+#print(orden)
+
+arr1 = np.array([1, 2, 3,5,6,7,8,9,10,11,12,14,15,17])
+print(arr1)
+arr2 = np.array([18,19,20,21,22,23,24,25,26,27,28])
+#arr2 = np.array([4, 5, 6])
+arr3 = np.array([29,30,31,32,33,34,35,36,37,38,39])
+
+#arr = np.concatenate((arr1, arr2))
+
+folding1=np.array_split(arr1,4)
+folding2=np.array_split(arr2,4)
+folding3=np.array_split(arr3,4)
+
+
+Resultado =np.empty(4,dtype=object)
+
+for i in range(4):
+    A=np.concatenate((folding1[i],folding2[i]))
+    #print("Dos",A)
+    A=np.concatenate((A,folding3[i]))
+    Resultado[i]=A
+
+print(Resultado)
+
+for j in range(4):
+    V=Resultado[j]
+    print(V)
+
+
+
+
+#print(folding)
+#for valor in folding:
+#    print(valor)
+    
 
 #privileged_groups = [{'race': 1}]
 #unprivileged_groups = [{'race': 0}]
@@ -34,20 +75,49 @@ from aif360.datasets import GermanDataset
 #print()
 
 
-#from aif360.datasets import GermanDataset
 
-dataset_m = GermanDataset()
-
+dataset_orig = GermanDataset(
+    protected_attribute_names=['sex'],           # this dataset also contains protected
+                                                 # attribute for "sex" which we do not
+                                                 # consider in this evaluation
+    privileged_classes=[['male']],#,      # age >=25 is considered privileged
+    features_to_drop=['personal_status'] # ignore sex-related attributes
+)
+      
 privileged_groups = [{'sex': 1}]
 unprivileged_groups = [{'sex': 0}]
 
-resultado =su.compute_distribution_feature(dm=dataset_m,unprivileged_groups=unprivileged_groups,privileged_groups=privileged_groups)
+indice_tra,indice_test=SU.stratified_double(dm=dataset_orig,
+                                   unprivileged_groups=unprivileged_groups,
+                                   privileged_groups=privileged_groups,
+                                   num_or_size_splits=5,
+                                   shuffle=True,seed=0)
 
-print(resultado)
+#print(indice_prueba)
 
-sens_ind = 0
-resultado = su.compute_feature_class(dm=dataset_m,unprivileged_groups=unprivileged_groups,privileged_groups=privileged_groups,sens_ind=sens_ind)
-print(resultado)
+#for elemento in indice_tra:
+#    print(elemento)
+#
+#for elemento in indice_test:
+#    print(elemento)
+
+'''
+dataset_orig_train2,dataset_orig_test2 =SU.double_split(dm=dataset_orig,
+                                                        unprivileged_groups=unprivileged_groups,
+                                                        privileged_groups=privileged_groups,
+                                                        num_or_size_splits=5,
+                                                        shuffle=True,seed=0)
+'''
+
+
+
+#resultado =su.compute_distribution_feature(dm=dataset_m,unprivileged_groups=unprivileged_groups,privileged_groups=privileged_groups)
+
+#print(resultado)
+
+#sens_ind = 0
+#resultado = su.compute_feature_class(dm=dataset_m,unprivileged_groups=unprivileged_groups,privileged_groups=privileged_groups,sens_ind=sens_ind)
+#print(resultado)
 #su.double_split(dm=dataset_m,unprivileged_groups=unprivileged_groups,
 #                privileged_groups=privileged_groups,num_or_size_splits=[0.8],
 #                shuffle=False,seed=0)
